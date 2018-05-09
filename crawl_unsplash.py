@@ -29,7 +29,7 @@ from selenium.common.exceptions import NoSuchElementException
 from sqlitedict import SqliteDict
 
 INITIAL_STATE_RE = re.compile(r'<script>window.__INITIAL_STATE__ = (.*?);</script>')
-
+DB_PATH = 'photos/unsplash.sqlite'
 
 class WebDriver:
     """wrapper for webdriver to allow context manager usage"""
@@ -230,8 +230,8 @@ def fill_image_metadata(image_id, colls_data, images_data):
 
 
 def process_collections_file(collections_file):
-    with SqliteDict('unsplash.sqlite', tablename='collections', autocommit=True) as colls_data:
-        with SqliteDict('unsplash.sqlite', tablename='images', autocommit=True) as images_data:
+    with SqliteDict(DB_PATH, tablename='collections', autocommit=True) as colls_data:
+        with SqliteDict(DB_PATH, tablename='images', autocommit=True) as images_data:
             with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
                 futures = {}
                 for ln in open(collections_file):
@@ -262,7 +262,7 @@ def download_images(image_quality='regular'):
     if not os.path.exists(download_dir):
         os.mkdir(download_dir)
 
-    with SqliteDict('unsplash.sqlite', tablename='images', flag='r') as images_data:
+    with SqliteDict(DB_PATH, tablename='images', flag='r') as images_data:
         with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
             for image_id in images_data:
                 download_path = os.path.join(download_dir, image_id + '.jpg')
