@@ -23,10 +23,15 @@ def main():
             for tag in img_data['tags']:
                 tag_data[tag] += [img]
     with SqliteDict(output_file, tablename='tags', autocommit=True) as output_data:
+        output_data = {'unsplash': {}}
         for tag in tag_data:
             img_list = tag_data[tag]
             if len(img_list) >= MIN_IMAGE_THRESHOLD:
-                output_data[tag] = {'pos': img_list, 'neg': [], 'unk': [], 'owner': 'unsplash'}
+                output_data['unsplash'][tag] = {
+                    'pos': img_list,
+                    'neg': [],
+                    'unk': [],
+                }
 
 
 if __name__ == '__main__':
